@@ -70,7 +70,7 @@ public interface DbManager extends Closeable {
     int delete(Class<?> entityType, WhereBuilder whereBuilder) throws DbException;
 
     ///////////// update
-    void update(Object entity, String... updateColumnNames) throws DbException;
+    void update(Object entity, WhereBuilder b, String... updateColumnNames) throws DbException;
 
     int update(Class<?> entityType, WhereBuilder whereBuilder, KeyValue... nameValuePairs) throws DbException;
 

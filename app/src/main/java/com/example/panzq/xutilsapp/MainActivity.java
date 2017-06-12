@@ -17,6 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import org.xutils.common.Callback;
 import org.xutils.common.util.DensityUtil;
 import org.xutils.common.util.LogUtil;
@@ -50,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
     @ViewInject(R.id.btn5)
     private Button btn5;
     private String sdPath = null;
+    @ViewInject(R.id.btn6)
+    private Button btn6;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
+    //private DbManager dbManager;
     //创建SD卡映射  mksdcard -l sdcard 128M "D:\sdcard.img"
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,23 +75,23 @@ public class MainActivity extends AppCompatActivity {
         sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         verifyStoragePermissions(MainActivity.this);
         mImageOptions = new ImageOptions.Builder()
-                .setSize(DensityUtil.dip2px(300),DensityUtil.dip2px(300))
+                .setSize(DensityUtil.dip2px(300), DensityUtil.dip2px(300))
                 .setRadius(DensityUtil.dip2px(25))
-                    // 如果ImageView的大小不是定义为wrap_content, 不要crop.
+                // 如果ImageView的大小不是定义为wrap_content, 不要crop.
                 .setCrop(true)
-                    // 加载中或错误图片的ScaleType
-                    //.setPlaceholderScaleType(ImageView.ScaleType.MATRIX)
+                // 加载中或错误图片的ScaleType
+                //.setPlaceholderScaleType(ImageView.ScaleType.MATRIX)
                 .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
-                    //设置加载过程中的图片
+                //设置加载过程中的图片
                 .setLoadingDrawableId(R.mipmap.button_load)
-                    //设置加载失败后的图片
+                //设置加载失败后的图片
                 .setFailureDrawableId(R.mipmap.sign_error_icon)
-                    //设置使用缓存
+                //设置使用缓存
                 .setUseMemCache(true)
-                    //设置支持gif
+                //设置支持gif
                 .setIgnoreGif(false)
                 .setFadeIn(true)
-                    //设置显示圆形图片
+                //设置显示圆形图片
                 //.setCircular(true)
                 .build();
         /**
@@ -98,143 +111,147 @@ public class MainActivity extends AppCompatActivity {
          .setRaduis(int raduis) //设置拐角弧度
          .setUseMemCache(true) //设置使用MemCache，默认true
          */
-
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    @Event(value = {R.id.btn1, R.id.btn2,R.id.btn4,R.id.btn5})
+    @Event(value = {R.id.btn1, R.id.btn2, R.id.btn4, R.id.btn5,R.id.btn6})
     private void showBtnContent(View view) {
         switch (view.getId()) {
             case R.id.btn1:
                 Toast.makeText(MainActivity.this, btn1.getText().toString().trim(), Toast.LENGTH_SHORT).show();
-                LogUtil.d("------"+btn1.getText());
+                LogUtil.d("------" + btn1.getText());
                 doGET("http://192.168.12.80:8080/code_2/servlet/LoginServlet");
                 break;
             case R.id.btn2:
                 Toast.makeText(MainActivity.this, btn2.getText().toString().trim(), Toast.LENGTH_SHORT).show();
-                LogUtil.d("------"+btn2.getText());
+                LogUtil.d("------" + btn2.getText());
                 doPost("http://192.168.12.80:8080/code_2/servlet/LoginServlet");
                 break;
             case R.id.btn4:
                 Toast.makeText(MainActivity.this, btn4.getText().toString().trim(), Toast.LENGTH_SHORT).show();
-                String uploadHost="http://192.168.12.80:8080/FileUpload/FileUploadServlet";
+                String uploadHost = "http://192.168.12.80:8080/FileUpload/FileUploadServlet";
                 unloadFile(uploadHost);
                 break;
             case R.id.btn5:
                 Toast.makeText(MainActivity.this, btn5.getText().toString().trim(), Toast.LENGTH_SHORT).show();
-                downloadFile("http://192.168.12.80:80/","0.jpg");
+                downloadFile("http://192.168.12.80:80/", "0.jpg");
+                break;
+            case R.id.btn6:
+                //Log.d("panzq", "插入员工信息");
+                Log.d("panzq","======ActivityDB====");
+                Intent intent = new Intent(MainActivity.this,ActivityDB.class);
+                startActivity(intent);
                 break;
         }
     }
 
     @Event(value = {R.id.btn3})
-    private void loadImage(View view)
-    {
+    private void loadImage(View view) {
         //x.image().bind(mImage,"http://img2.3lian.com/2014/f2/164/d/17.jpg",mImageOptions);
-         //assets file
+        //assets file
         x.image().bind(mImage, "assets://1.jpg", mImageOptions);
         //x.image().bind(mImage, sdPath+"/test.gif", mImageOptions);
     }
 
-    private void doGET(String url)
-    {
+    private void doGET(String url) {
         RequestParams params = new RequestParams(url);
-        params.addBodyParameter("username","zhangsan");
-        params.addBodyParameter("password","123456");
-        Log.d("panzq","get .... uri"+params.getUri());
-        Log.d("panzq","get .... uri_all"+params.toString());
+        params.addBodyParameter("username", "zhangsan");
+        params.addBodyParameter("password", "123456");
+        Log.d("panzq", "get .... uri" + params.getUri());
+        Log.d("panzq", "get .... uri_all" + params.toString());
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                Log.d("panzq","success get....."+result);
+                Log.d("panzq", "success get....." + result);
 
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.d("panzq","onError get.....");
+                Log.d("panzq", "onError get.....");
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-                Log.d("panzq","onCancelled get.....");
+                Log.d("panzq", "onCancelled get.....");
             }
 
             @Override
             public void onFinished() {
-                Log.d("panzq","onFinished get.....");
+                Log.d("panzq", "onFinished get.....");
             }
         });
     }
-    private void doPost(String url)
-    {
+
+    private void doPost(String url) {
         RequestParams params = new RequestParams(url);
-        params.addBodyParameter("username","zhangsan");
-        params.addBodyParameter("password","123456");
-        Log.d("panzq","post .... uri"+params.getUri());
-        Log.d("panzq","post .... uri_all"+params.toString());
+        params.addBodyParameter("username", "zhangsan");
+        params.addBodyParameter("password", "123456");
+        Log.d("panzq", "post .... uri" + params.getUri());
+        Log.d("panzq", "post .... uri_all" + params.toString());
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
 
-                Log.d("panzq","success post.....");
-                if (!TextUtils.isEmpty(result))
-                {
-                    Log.d("panzq","result = "+result);
+                Log.d("panzq", "success post.....");
+                if (!TextUtils.isEmpty(result)) {
+                    Log.d("panzq", "result = " + result);
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.d("panzq","onError post.....");
+                Log.d("panzq", "onError post.....");
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-                Log.d("panzq","onCancelled post.....");
+                Log.d("panzq", "onCancelled post.....");
             }
 
             @Override
             public void onFinished() {
-                Log.d("panzq","onFinished post.....");
+                Log.d("panzq", "onFinished post.....");
             }
         });
     }
-    private void unloadFile(String url)
-    {
+
+    private void unloadFile(String url) {
 
 
         //String path = sdPath+"/test.gif";
-        String path = Environment.getDataDirectory().getAbsolutePath()+"/test.gif";
+        String path = Environment.getDataDirectory().getAbsolutePath() + "/test.gif";
 
-        Log.d("panzq","sdpath ="+path);
+        Log.d("panzq", "sdpath =" + path);
        /* final ProgressDialog dia = new ProgressDialog(this);
         dia.setMessage("加载中....");
         dia.show();*/
         RequestParams params = new RequestParams(url);
-        Log.d("panzq","url---"+url);
+        Log.d("panzq", "url---" + url);
         params.setMultipart(true);
-        params.addBodyParameter("File",new File(path),null,"testdown.gif");
+        params.addBodyParameter("File", new File(path), null, "testdown.gif");
 
-        x.http().post(params,new Callback.ProgressCallback<ResponseEntity>()
-        {
+        x.http().post(params, new Callback.ProgressCallback<ResponseEntity>() {
             @Override
             public void onSuccess(ResponseEntity result) {
-                Log.d("panzq","unload ----- onSuccess "+result);
+                Log.d("panzq", "unload ----- onSuccess " + result);
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.d("panzq","unload ----- onError"+isOnCallback);
+                Log.d("panzq", "unload ----- onError" + isOnCallback);
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-                Log.d("panzq","unload ----- onCancelled");
+                Log.d("panzq", "unload ----- onCancelled");
             }
 
             @Override
             public void onFinished() {
-                Log.d("panzq","unload ----- onFinished");
+                Log.d("panzq", "unload ----- onFinished");
                 //dia.dismiss();
             }
 
@@ -255,33 +272,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void downloadFile(String url,String file)
-    {
+    private void downloadFile(String url, String file) {
         verifyStoragePermissions(MainActivity.this);
-        String path = sdPath+"/"+file;
+        String path = sdPath + "/" + file;
         RequestParams params = new RequestParams(url);
         params.setSaveFilePath(path);
         params.setAutoRename(true);
-        Log.d("panzq","sdpath ="+path);
+        Log.d("panzq", "sdpath =" + path);
         x.http().post(params, new Callback.ProgressCallback<File>() {
             @Override
             public void onWaiting() {
-                Log.d("panzq","download ----onWaiting ----");
+                Log.d("panzq", "download ----onWaiting ----");
             }
 
             @Override
             public void onStarted() {
-                Log.d("panzq","download ----onStarted ----");
+                Log.d("panzq", "download ----onStarted ----");
             }
 
             @Override
             public void onLoading(long total, long current, boolean isDownloading) {
-                Log.d("panzq","download ----onLoading ----"+current);
+                Log.d("panzq", "download ----onLoading ----" + current);
             }
 
             @Override
             public void onSuccess(File result) {
-                Log.d("panzq","download ----onSuccess ----"+result.getAbsolutePath());
+                Log.d("panzq", "download ----onSuccess ----" + result.getAbsolutePath());
                 //apk下载完成后，调用系统的安装方法
                 if (result.getAbsolutePath().endsWith("apk")) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -292,17 +308,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Log.d("panzq","download ----onError ----"+isOnCallback);
+                Log.d("panzq", "download ----onError ----" + isOnCallback);
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-                Log.d("panzq","download ----onCancelled ----");
+                Log.d("panzq", "download ----onCancelled ----");
             }
 
             @Override
             public void onFinished() {
-                Log.d("panzq","download ----onFinished ----");
+                Log.d("panzq", "download ----onFinished ----");
             }
         });
     }
@@ -333,4 +349,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.panzq.xutilsapp/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.panzq.xutilsapp/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 }

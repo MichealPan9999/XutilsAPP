@@ -102,7 +102,7 @@ public final class LruDiskCache {
                         finalResult.setHits(finalResult.getHits() + 1);
                         finalResult.setLastAccess(System.currentTimeMillis());
                         try {
-                            cacheDb.update(finalResult, "hits", "lastAccess");
+                            cacheDb.update(finalResult, WhereBuilder.b("sex", "=", "man"), "hits", "lastAccess");
                         } catch (Throwable ex) {
                             LogUtil.e(ex.getMessage(), ex);
                         }

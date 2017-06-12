@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile project(':xutils')
     compile files('libs/gson-2.2.2.jar')
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

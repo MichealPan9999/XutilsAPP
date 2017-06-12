@@ -282,7 +282,7 @@ public final class DbManagerImpl extends DbBase {
     }
 
     @Override
-    public void update(Object entity, String... updateColumnNames) throws DbException {
+    public void update(Object entity, WhereBuilder b, String... updateColumnNames) throws DbException {
         try {
             beginTransaction();
 
